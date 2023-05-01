@@ -53,6 +53,7 @@ const refresh = (req, res) => {
         return res.status(401).json({ message: "Unauthorized" });
     }
     const refreshToken = cookies.jwt
+    console.log(refreshToken);
 
     jwt.verify(
         refreshToken,
@@ -68,15 +69,15 @@ const refresh = (req, res) => {
             }
             const accessToken = jwt.sign(
                 {
-                    UserInfo:{
+                    UserInfo: {
                         "username": foundUser.username,
                         "roles": foundUser.roles
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                {expiresIn: "15m"}
+                { expiresIn: "15m" }
             )
-            res.json({accessToken})
+            res.json({ accessToken })
         }
     )
 
@@ -84,15 +85,15 @@ const refresh = (req, res) => {
 
 const logOut = (req, res) => {
     const cookies = req.cookies
-    if(!cookies){
+    if (!cookies) {
         return res.sendStatus(204)
     }
-    res.clearCookie("jwt",{
-        httpOnly:true,
-        sameSite:"None",
-        secure:true
+    res.clearCookie("jwt", {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true
     })
-    res.json({message:"Cookie cleared"});
+    res.json({ message: "Cookie cleared" });
 }
 
 module.exports = {
