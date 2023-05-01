@@ -53,7 +53,7 @@ const refresh = (req, res) => {
         return res.status(401).json({ message: "Unauthorized" });
     }
     const refreshToken = cookies.jwt
-    console.log(refreshToken);
+    console.log(cookies);
 
     jwt.verify(
         refreshToken,
