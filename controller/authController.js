@@ -29,7 +29,6 @@ const login = async (req, res) => {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "15m" }
     )
-    console.log("Signed with JWT");
 
     const refreshToken = jwt.sign(
         { "username": foundUser.username },
@@ -37,15 +36,12 @@ const login = async (req, res) => {
         { expiresIn: "7d" }
     )
 
-    console.log("refresh token generated");
-
     res.cookie("jwt", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: true,
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
-    localStorage.setItem("jwt", JSON.stringify(refreshToken))
 
     res.json({ accessToken })
 }
@@ -53,50 +49,50 @@ const login = async (req, res) => {
 const refresh = (req, res) => {
     const cookies = req.cookies
 
-    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
-
-    // const refreshToken = cookies.jwt
-    const refreshToken=JSON.parse(localStorage.getItem(jwt))
-
-    console.log(refreshToken);
+    if (!cookies) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const refreshToken = cookies.jwt
 
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
-        async (err, decoded) => {
-            if (err) return res.status(403).json({ message: 'Forbidden' })
+        async (error, decode) => {
+            if (error) {
+                return res.status(403).json({ message: "Forbidden" })
+            }
+            const foundUser = await User.findOne({ username: decode.username }).exec()
 
-            const foundUser = await User.findOne({ username: decoded.username }).exec()
-
-            if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
-
+            if (!foundUser) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
             const accessToken = jwt.sign(
                 {
-                    "UserInfo": {
+                    UserInfo:{
                         "username": foundUser.username,
                         "roles": foundUser.roles
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '15m' }
+                {expiresIn: "15m"}
             )
-
-            res.json({ accessToken })
+            res.json({accessToken})
         }
     )
+
 }
 
 const logOut = (req, res) => {
     const cookies = req.cookies
-    if (!cookies) {
+    if(!cookies){
         return res.sendStatus(204)
     }
-    res.clearCookie("jwt", {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true
+    res.clearCookie("jwt",{
+        httpOnly:true,
+        sameSite:"None",
+        secure:true
     })
-    res.json({ message: "Cookie cleared" });
+    res.json({message:"Cookie cleared"});
 }
 
 module.exports = {
