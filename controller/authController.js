@@ -53,37 +53,34 @@ const login = async (req, res) => {
 const refresh = (req, res) => {
     const cookies = req.cookies
 
-    if (!cookies.jwt) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
+    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
+
     const refreshToken = cookies.jwt
 
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
-        async (error, decode) => {
-            if (error) {
-                return res.status(403).json({ message: "Forbidden" })
-            }
-            const foundUser = await User.findOne({ username: decode.username }).exec()
+        async (err, decoded) => {
+            if (err) return res.status(403).json({ message: 'Forbidden' })
 
-            if (!foundUser) {
-                return res.status(401).json({ message: "Unauthorized" });
-            }
+            const foundUser = await User.findOne({ username: decoded.username }).exec()
+
+            if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
+
             const accessToken = jwt.sign(
                 {
-                    UserInfo: {
+                    "UserInfo": {
                         "username": foundUser.username,
                         "roles": foundUser.roles
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: "15m" }
+                { expiresIn: '15m' }
             )
+
             res.json({ accessToken })
         }
     )
-
 }
 
 const logOut = (req, res) => {
