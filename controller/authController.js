@@ -29,6 +29,7 @@ const login = async (req, res) => {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "15m" }
     )
+    console.log("Signed with JWT");
 
     const refreshToken = jwt.sign(
         { "username": foundUser.username },
@@ -36,12 +37,15 @@ const login = async (req, res) => {
         { expiresIn: "7d" }
     )
 
+    console.log("refresh token generated");
+
     res.cookie("jwt", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: true,
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
+    console.log("cookie saved");
 
     console.log(req.cookies);
 
