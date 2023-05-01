@@ -45,7 +45,7 @@ const login = async (req, res) => {
         sameSite: true,
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
-    console.log("cookie saved");
+    localStorage.setItem("jwt", JSON.stringify(refreshToken))
 
     res.json({ accessToken })
 }
@@ -55,7 +55,10 @@ const refresh = (req, res) => {
 
     if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
 
-    const refreshToken = cookies.jwt
+    // const refreshToken = cookies.jwt
+    const refreshToken=JSON.parse(localStorage.getItem(jwt))
+
+    console.log(refreshToken);
 
     jwt.verify(
         refreshToken,

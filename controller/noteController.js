@@ -7,8 +7,6 @@ const getAllNotes = async (req, res) => {
 
     const notes = await Note.find().lean();
 
-    console.log(req.cookies);
-
     if (!notes.length) {
         return res.status(400).json({ message: "No Notes is found" });
 
