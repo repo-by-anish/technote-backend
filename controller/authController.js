@@ -47,8 +47,6 @@ const login = async (req, res) => {
     })
     console.log("cookie saved");
 
-    console.log(req.cookies);
-
     res.json({ accessToken })
 }
 
