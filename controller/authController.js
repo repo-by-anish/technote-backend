@@ -60,6 +60,7 @@ const refresh = (req, res) => {
         process.env.REFRESH_TOKEN_SECRET,
         async (error, decode) => {
             if (error) {
+                console.log(error);
                 return res.status(403).json({ message: "Forbidden" })
             }
             const foundUser = await User.findOne({ username: decode.username }).exec()
