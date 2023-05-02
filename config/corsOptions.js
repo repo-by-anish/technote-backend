@@ -9,6 +9,7 @@ const corsOptions={
         }
     },
     credentials:false,
+    "Access-Control-Allow-Credentials": "true",
     optionSuccessStatus:200
 }
 
